@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фитнес-клуб - Система управления</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Стили для страницы выбора режима */
+        .mode-selection {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            text-align: center;
+        }
+        
+        .mode-selection h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .mode-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 1.5rem 3rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        /* Стили для форм авторизации */
+        .login-container {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+        }
+        
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-form h2 {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-back {
+            background: var(--light);
+            color: var(--dark);
+            margin-top: 1rem;
+        }
+        
+        .btn-back:hover {
+            background: #bdc3c7;
+        }
+        
+        .error-message {
+            color: var(--accent);
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        /* Стили для основного интерфейса */
+        .main-interface {
+            display: none;
+        }
+        
+        header {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logout-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        
+        section {
+            padding: 2rem 0;
+        }
+        
+        .section-title {
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .results {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 5px;
+            display: none;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .client-limited {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .client-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .mode-buttons {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Страница выбора режима -->
+    <div id="modeSelection" class="mode-selection">
+        <div class="container">
+            <h1>Фитнес-клуб</h1>
+            <p>Выберите режим работы системы</p>
+            <div class="mode-buttons">
+                <button class="mode-btn" onclick="showLogin('admin')">Режим администратора</button>
+                <button class="mode-btn" onclick="showLogin('client')">Режим клиента</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Форма авторизации администратора -->
+    <div id="adminLogin" class="login-container">
+        <div class="login-form">
+            <h2>Вход для администратора</h2>
+            <div class="form-group">
+                <label for="adminUsername">Логин:</label>
+                <input type="text" id="adminUsername" placeholder="Введите логин">
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Пароль:</label>
+                <input type="password" id="adminPassword" placeholder="Введите пароль">
+            </div>
+            <button class="btn" onclick="login('admin')">Войти</button>
+            <button class="btn btn-back" onclick="backToModeSelection()">Назад</button>
+            <div id="adminError" class="error-message">Неверный логин или пароль!</div>
+        </div>
+    </div>
+
+    <!-- Форма авторизации клиента -->
+    <div id="clientLogin" class="login-container">
+        <div class="login-form">
+            <h2>Вход для клиента</h2>
+            <div class="form-group">
+                <label for="clientUsername">Логин:</label>
+                <input type="text" id="clientUsername" placeholder="Введите логин">
+            </div>
+            <div class="form-group">
+                <label for="clientPassword">Пароль:</label>
+                <input type="password" id="clientPassword" placeholder="Введите пароль">
+            </div>
+            <button class="btn" onclick="login('client')">Войти</button>
+            <button class="btn btn-back" onclick="backToModeSelection()">Назад</button>
+            <div id="clientError" class="error-message">Неверный логин или пароль!</div>
+        </div>
+    </div>
+
+    <!-- Интерфейс администратора -->
+    <div id="adminInterface" class="main-interface">
+        <header>
+            <div class="container header-content">
+                <h1>Панель администратора</h1>
+                <div class="user-info">
+                    <span>Администратор</span>
+                    <button class="logout-btn" onclick="logout()">Выйти</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <section id="clients">
+                <h2 class="section-title">Управление клиентами</h2>
+                
+                <div class="card">
+                    <h3>Добавить нового клиента</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Имя:</label>
+                            <input type="text" id="clientFirstName" placeholder="Введите имя">
+                        </div>
+                        <div class="form-group">
+                            <label>Фамилия:</label>
+                            <input type="text" id="clientLastName" placeholder="Введите фамилию">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Телефон:</label>
+                            <input type="text" id="clientPhone" placeholder="Введите телефон" maxlength="11">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="clientEmail" placeholder="Введите email">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата рождения:</label>
+                            <input type="date" id="clientBirthDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Пол:</label>
+                            <select id="clientGender">
+                                <option value="М">Мужской</option>
+                                <option value="Ж">Женский</option>
+                                <option value="Не указан">Не указан</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="addClient()">Добавить клиента</button>
+                </div>
+
+                <div class="card">
+                    <h3>Поиск клиента</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="searchClient" placeholder="Введите ID клиента">
+                        </div>
+                        <button class="btn" onclick="getClientInfo()">Найти клиента</button>
+                    </div>
+                    <div id="clientInfoResult" class="results"></div>
+                </div>
+
+                <div class="card">
+                    <h3>Удаление клиента</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="deleteClientId" placeholder="Введите ID клиента для удаления">
+                        </div>
+                        <button class="btn" onclick="deleteClient()" style="background: var(--accent)">Удалить клиента</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="subscriptions">
+                <h2 class="section-title">Управление абонементами</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card" onclick="showSubscriptionManagement()">
+                        <div class="feature-icon">💰</div>
+                        <h3>Управление ценами</h3>
+                        <p>Изменение стоимости абонементов и услуг</p>
+                    </div>
+                    <div class="feature-card" onclick="showClientSubscriptions()">
+                        <div class="feature-icon">📋</div>
+                        <h3>Абонементы клиентов</h3>
+                        <p>Просмотр и управление активными абонементами</p>
+                    </div>
+                    <div class="feature-card" onclick="showSubscriptionStats()">
+                        <div class="feature-icon">📊</div>
+                        <h3>Статистика</h3>
+                        <p>Анализ продаж и использования абонементов</p>
+                    </div>
+                </div>
+
+                <div id="subscriptionManagement" class="card" style="display: none;">
+                    <h3>Изменение цены абонемента</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ID услуги:</label>
+                            <input type="number" id="serviceId" placeholder="Введите ID услуги">
+                        </div>
+                        <div class="form-group">
+                            <label>Новая цена:</label>
+                            <input type="number" id="newPrice" placeholder="Введите новую цену" step="0.01">
+                        </div>
+                    </div>
+                    <button class="btn" onclick="updateSubscriptionPrice()">Обновить цену</button>
+                </div>
+
+                <div id="clientSubscriptions" class="card" style="display: none;">
+                    <h3>Абонементы клиентов</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="number" id="searchClientSubs" placeholder="Введите ID клиента">
+                        </div>
+                        <button class="btn" onclick="searchClientSubscriptions()">Найти абонементы</button>
+                    </div>
+                    <div id="subscriptionsResult" class="results"></div>
+                </div>
+
+                <div id="subscriptionStats" class="card" style="display: none;">
+                    <h3>Статистика абонементов</h3>
+                    <div class="form-row">
+                        <button class="btn" onclick="showMonthlyStats()">Статистика за месяц</button>
+                        <button class="btn" onclick="showPopularServices()">Популярные услуги</button>
+                    </div>
+                    <div id="statsResult" class="results"></div>
+                </div>
+            </section>
+
+            <section id="schedule">
+                <h2 class="section-title">Расписание и занятия</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card" onclick="showClassManagement()">
+                        <div class="feature-icon">📅</div>
+                        <h3>Управление занятиями</h3>
+                        <p>Создание и редактирование групповых занятий</p>
+                    </div>
+                    <div class="feature-card" onclick="checkClassAvailability()">
+                        <div class="feature-icon">👥</div>
+                        <h3>Проверка мест</h3>
+                        <p>Проверка доступности мест на занятиях</p>
+                    </div>
+                    <div class="feature-card" onclick="showAttendance()">
+                        <div class="feature-icon">✅</div>
+                        <h3>Посещаемость</h3>
+                        <p>Учет и контроль посещений</p>
+                    </div>
+                </div>
+
+                <div id="classManagement" class="card" style="display: none;">
+                    <h3>Управление занятиями</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Название занятия:</label>
+                            <input type="text" id="className" placeholder="Введите название">
+                        </div>
+                        <div class="form-group">
+                            <label>Тренер:</label>
+                            <select id="classTrainer">
+                                <option value="1">Иван Сидоров</option>
+                                <option value="2">Анна Петрова</option>
+                                <option value="3">Мария Козлова</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата и время начала:</label>
+                            <input type="datetime-local" id="classStart">
+                        </div>
+                        <div class="form-group">
+                            <label>Дата и время окончания:</label>
+                            <input type="datetime-local" id="classEnd">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Максимум участников:</label>
+                            <input type="number" id="classMax" value="10">
+                        </div>
+                    </div>
+                    <button class="btn" onclick="createClass()">Создать занятие</button>
+                </div>
+
+                <div id="classAvailability" class="card" style="display: none;">
+                    <h3>Проверка доступности занятия</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="number" id="classId" placeholder="Введите ID занятия">
+                        </div>
+                        <button class="btn" onclick="getClassAvailability()">Проверить</button>
+                    </div>
+                    <div id="availabilityResult" class="results"></div>
+                </div>
+
+                <div id="attendance" class="card" style="display: none;">
+                    <h3>Учет посещаемости</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата:</label>
+                            <input type="date" id="attendanceDate">
+                        </div>
+                        <button class="btn" onclick="showDailyAttendance()">Показать посещения</button>
+                    </div>
+                    <div id="attendanceResult" class="results"></div>
+                </div>
+            </section>
+
+            <section id="finance">
+                <h2 class="section-title">Финансы и отчетность</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card" onclick="showTransactions()">
+                        <div class="feature-icon">💳</div>
+                        <h3>Транзакции</h3>
+                        <p>Просмотр финансовых операций</p>
+                    </div>
+                    <div class="feature-card" onclick="generateReport()">
+                        <div class="feature-icon">📈</div>
+                        <h3>Отчеты</h3>
+                        <p>Формирование финансовых отчетов</p>
+                    </div>
+                    <div class="feature-card" onclick="showContracts()">
+                        <div class="feature-icon">📝</div>
+                        <h3>Договоры</h3>
+                        <p>Управление договорами с клиентами</p>
+                    </div>
+                </div>
+
+                <div id="transactions" class="card" style="display: none;">
+                    <h3>Финансовые транзакции</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Период с:</label>
+                            <input type="date" id="transactionsFrom">
+                        </div>
+                        <div class="form-group">
+                            <label>Период по:</label>
+                            <input type="date" id="transactionsTo">
+                        </div>
+                    </div>
+                    <button class="btn" onclick="loadTransactions()">Загрузить транзакции</button>
+                    <div id="transactionsResult" class="results"></div>
+                </div>
+
+                <div id="contracts" class="card" style="display: none;">
+                    <h3>Договоры с клиентами</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="number" id="searchContract" placeholder="Введите ID клиента">
+                        </div>
+                        <button class="btn" onclick="searchContracts()">Найти договоры</button>
+                    </div>
+                    <div id="contractsResult" class="results"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Интерфейс клиента -->
+    <div id="clientInterface" class="main-interface">
+        <header>
+            <div class="container header-content">
+                <h1>Личный кабинет клиента</h1>
+                <div class="user-info">
+                    <span>Клиент</span>
+                    <button class="logout-btn" onclick="logout()">Выйти</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="client-limited">
+                <h2>Добро пожаловать в личный кабинет!</h2>
+                <p>Здесь вы можете управлять своими занятиями и абонементами</p>
+                
+                <div class="client-features">
+                    <div class="feature-card" onclick="showMySubscriptions()">
+                        <div class="feature-icon">🎫</div>
+                        <h3>Мои абонементы</h3>
+                        <p>Просмотр активных абонементов и остатков посещений</p>
+                    </div>
+                    <div class="feature-card" onclick="showClassRegistration()">
+                        <div class="feature-icon">📅</div>
+                        <h3>Запись на тренировки</h3>
+                        <p>Запись на групповые занятия</p>
+                    </div>
+                    <div class="feature-card" onclick="showMyVisits()">
+                        <div class="feature-icon">📊</div>
+                        <h3>История посещений</h3>
+                        <p>Просмотр истории ваших посещений</p>
+                    </div>
+                </div>
+
+                <div id="clientContent" class="card" style="display: none; margin-top: 2rem;">
+                    <!-- Контент будет загружаться динамически -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Текущий пользователь
+        let currentUser = null;
+
+        // Показать форму авторизации
+        function showLogin(userType) {
+            document.getElementById('modeSelection').style.display = 'none';
+            document.getElementById(userType + 'Login').style.display = 'flex';
+        }
+
+        // Вернуться к выбору режима
+        function backToModeSelection() {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('clientLogin').style.display = 'none';
+            document.getElementById('modeSelection').style.display = 'flex';
+            
+            // Очистить поля и ошибки
+            document.querySelectorAll('input').forEach(input => input.value = '');
+            document.querySelectorAll('.error-message').forEach(error => error.style.display = 'none');
+        }
+
+        // Авторизация
+        function login(userType) {
+            const username = document.getElementById(userType + 'Username').value;
+            const password = document.getElementById(userType + 'Password').value;
+            const errorElement = document.getElementById(userType + 'Error');
+
+            // Проверка учетных данных
+            if (username === (userType === 'admin' ? 'Администратор' : 'Клиент') && password === '111') {
+                currentUser = userType;
+                document.getElementById(userType + 'Login').style.display = 'none';
+                document.getElementById(userType + 'Interface').style.display = 'block';
+            } else {
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // Выход из системы
+        function logout() {
+            currentUser = null;
+            document.getElementById('adminInterface').style.display = 'none';
+            document.getElementById('clientInterface').style.display = 'none';
+            document.getElementById('modeSelection').style.display = 'flex';
+            
+            // Сброс всех динамических элементов
+            resetInterface();
+        }
+
+        // Сброс интерфейса
+        function resetInterface() {
+            document.querySelectorAll('input').forEach(input => input.value = '');
+            document.querySelectorAll('.results').forEach(result => {
+                result.style.display = 'none';
+                result.innerHTML = '';
+            });
+            document.querySelectorAll('.card').forEach(card => {
+                if (!card.closest('section')) return;
+                if (card.id !== '') {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Функции администратора
+        function addClient() {
+            const firstName = document.getElementById('clientFirstName').value;
+            const lastName = document.getElementById('clientLastName').value;
+            const phone = document.getElementById('clientPhone').value;
+            const email = document.getElementById('clientEmail').value;
+            const birthDate = document.getElementById('clientBirthDate').value;
+            const gender = document.getElementById('clientGender').value;
+
+            if (!firstName || !lastName || !phone) {
+                alert('Заполните обязательные поля: Имя, Фамилия, Телефон');
+                return;
+            }
+
+            if (phone.length !== 11) {
+                alert('Номер телефона должен содержать 11 цифр');
+                return;
+            }
+
+            // Имитация вызова хранимой процедуры
+            alert(`Клиент ${firstName} ${lastName} успешно добавлен!\n\nДанные:\nТелефон: ${phone}\nEmail: ${email}\nДата рождения: ${birthDate}\nПол: ${gender}`);
+            
+            // Очистка формы
+            document.getElementById('clientFirstName').value = '';
+            document.getElementById('clientLastName').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientBirthDate').value = '';
+        }
+
+        function getClientInfo() {
+            const clientId = document.getElementById('searchClient').value;
+            if (!clientId) {
+                alert('Введите ID клиента');
+                return;
+            }
+
+            // Имитация получения данных
+            const result = document.getElementById('clientInfoResult');
+            result.innerHTML = `
+                <h4>Информация о клиенте ID: ${clientId}</h4>
+                <p><strong>ФИО:</strong> Иванов Иван Иванович</p>
+                <p><strong>Телефон:</strong> +7 (999) 123-45-67</p>
+                <p><strong>Email:</strong> ivanov@example.com</p>
+                <p><strong>Дата регистрации:</strong> 2024-01-15</p>
+                <p><strong>Активных абонементов:</strong> 2</p>
+                <p><strong>Всего посещений:</strong> 24</p>
+            `;
+            result.style.display = 'block';
+        }
+
+        function deleteClient() {
+            const clientId = document.getElementById('deleteClientId').value;
+            if (!clientId) {
+                alert('Введите ID клиента для удаления');
+                return;
+            }
+
+            if (confirm(`Вы уверены, что хотите удалить клиента с ID: ${clientId}?`)) {
+                // Имитация удаления
+                alert(`Клиент с ID: ${clientId} успешно удален`);
+                document.getElementById('deleteClientId').value = '';
+            }
+        }
+
+        function showSubscriptionManagement() {
+            document.getElementById('subscriptionManagement').style.display = 'block';
+            document.getElementById('clientSubscriptions').style.display = 'none';
+            document.getElementById('subscriptionStats').style.display = 'none';
+        }
+
+        function showClientSubscriptions() {
+            document.getElementById('subscriptionManagement').style.display = 'none';
+            document.getElementById('clientSubscriptions').style.display = 'block';
+            document.getElementById('subscriptionStats').style.display = 'none';
+        }
+
+        function showSubscriptionStats() {
+            document.getElementById('subscriptionManagement').style.display = 'none';
+            document.getElementById('clientSubscriptions').style.display = 'none';
+            document.getElementById('subscriptionStats').style.display = 'block';
+        }
+
+        function updateSubscriptionPrice() {
+            const serviceId = document.getElementById('serviceId').value;
+            const newPrice = document.getElementById('newPrice').value;
+
+            if (!serviceId || !newPrice) {
+                alert('Заполните все поля');
+                return;
+            }
+
+            alert(`Цена услуги ID: ${serviceId} обновлена до ${newPrice} руб.`);
+            document.getElementById('serviceId').value = '';
+            document.getElementById('newPrice').value = '';
+        }
+
+        function searchClientSubscriptions() {
+            const clientId = document.getElementById('searchClientSubs').value;
+            if (!clientId) {
+                alert('Введите ID клиента');
+                return;
+            }
+
+            const result = document.getElementById('subscriptionsResult');
+            result.innerHTML = `
+                <h4>Абонементы клиента ID: ${clientId}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID абонемента</th>
+                            <th>Услуга</th>
+                            <th>Статус</th>
+                            <th>Дата активации</th>
+                            <th>Осталось посещений</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>101</td>
+                            <td>Полный абонемент</td>
+                            <td>Активен</td>
+                            <td>2024-03-01</td>
+                            <td>8</td>
+                        </tr>
+                        <tr>
+                            <td>102</td>
+                            <td>Только тренажеры</td>
+                            <td>Истек</td>
+                            <td>2024-02-01</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            result.style.display = 'block';
+        }
+
+        function showMonthlyStats() {
+            const result = document.getElementById('statsResult');
+            result.innerHTML = `
+                <h4>Статистика за март 2024</h4>
+                <p><strong>Продано абонементов:</strong> 45</p>
+                <p><strong>Общая выручка:</strong> 225,000 руб.</p>
+                <p><strong>Самый популярный абонемент:</strong> Полный (тренажеры + групповые)</p>
+                <p><strong>Новых клиентов:</strong> 12</p>
+            `;
+            result.style.display = 'block';
+        }
+
+        function showPopularServices() {
+            const result = document.getElementById('statsResult');
+            result.innerHTML = `
+                <h4>Популярные услуги</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Услуга</th>
+                            <th>Количество продаж</th>
+                            <th>Выручка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Полный абонемент</td>
+                            <td>25</td>
+                            <td>150,000 руб.</td>
+                        </tr>
+                        <tr>
+                            <td>Только тренажеры</td>
+                            <td>15</td>
+                            <td>60,000 руб.</td>
+                        </tr>
+                        <tr>
+                            <td>Разовое посещение</td>
+                            <td>5</td>
+                            <td>15,000 руб.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            result.style.display = 'block';
+        }
+
+        function showClassManagement() {
+            document.getElementById('classManagement').style.display = 'block';
+            document.getElementById('classAvailability').style.display = 'none';
+            document.getElementById('attendance').style.display = 'none';
+        }
+
+        function checkClassAvailability() {
+            document.getElementById('classManagement').style.display = 'none';
+            document.getElementById('classAvailability').style.display = 'block';
+            document.getElementById('attendance').style.display = 'none';
+        }
+
+        function showAttendance() {
+            document.getElementById('classManagement').style.display = 'none';
+            document.getElementById('classAvailability').style.display = 'none';
+            document.getElementById('attendance').style.display = 'block';
+        }
+
+        function createClass() {
+            const className = document.getElementById('className').value;
+            const trainer = document.getElementById('classTrainer').value;
+            const start = document.getElementById('classStart').value;
+            const end = document.getElementById('classEnd').value;
+            const max = document.getElementById('classMax').value;
+
+            if (!className || !start || !end) {
+                alert('Заполните обязательные поля');
+                return;
+            }
+
+            alert(`Занятие "${className}" успешно создано!`);
+            // Очистка формы
+            document.getElementById('className').value = '';
+            document.getElementById('classStart').value = '';
+            document.getElementById('classEnd').value = '';
+            document.getElementById('classMax').value = '10';
+        }
+
+        function getClassAvailability() {
+            const classId = document.getElementById('classId').value;
+            if (!classId) {
+                alert('Введите ID занятия');
+                return;
+            }
+
+            // Имитация проверки
+            const result = document.getElementById('availabilityResult');
+            result.innerHTML = `
+                <h4>Информация о занятии ID: ${classId}</h4>
+                <p><strong>Название:</strong> Йога для начинающих</p>
+                <p><strong>Время:</strong> 2024-03-20 18:00-19:30</p>
+                <p><strong>Тренер:</strong> Анна Петрова</p>
+                <p><strong>Статус:</strong> Есть свободные места: 5 из 15</p>
+            `;
+            result.style.display = 'block';
+        }
+
+        function showDailyAttendance() {
+            const date = document.getElementById('attendanceDate').value;
+            if (!date) {
+                alert('Выберите дату');
+                return;
+            }
+
+            const result = document.getElementById('attendanceResult');
+            result.innerHTML = `
+                <h4>Посещаемость за ${date}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Время</th>
+                            <th>Клиент</th>
+                            <th>Тип посещения</th>
+                            <th>Продолжительность</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>09:00-10:30</td>
+                            <td>Иванов И.И.</td>
+                            <td>Тренажеры</td>
+                            <td>1 час 30 мин</td>
+                        </tr>
+                        <tr>
+                            <td>10:00-11:00</td>
+                            <td>Петрова А.С.</td>
+                            <td>Групповое (Йога)</td>
+                            <td>1 час</td>
+                        </tr>
+                        <tr>
+                            <td>18:00-19:30</td>
+                            <td>Сидоров П.К.</td>
+                            <td>Тренажеры</td>
+                            <td>1 час 30 мин</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 1rem;"><strong>Всего посещений:</strong> 3</p>
+            `;
+            result.style.display = 'block';
+        }
+
+        function showTransactions() {
+            document.getElementById('transactions').style.display = 'block';
+            document.getElementById('contracts').style.display = 'none';
+        }
+
+        function showContracts() {
+            document.getElementById('transactions').style.display = 'none';
+            document.getElementById('contracts').style.display = 'block';
+        }
+
+        function loadTransactions() {
+            const from = document.getElementById('transactionsFrom').value;
+            const to = document.getElementById('transactionsTo').value;
+
+            if (!from || !to) {
+                alert('Выберите период');
+                return;
+            }
+
+            const result = document.getElementById('transactionsResult');
+            result.innerHTML = `
+                <h4>Транзакции за период ${from} - ${to}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Клиент</th>
+                            <th>Услуга</th>
+                            <th>Сумма</th>
+                            <th>Способ оплаты</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-03-15</td>
+                            <td>Иванов И.И.</td>
+                            <td>Полный абонемент</td>
+                            <td>6,000 руб.</td>
+                            <td>Карта</td>
+                        </tr>
+                        <tr>
+                            <td>2024-03-14</td>
+                            <td>Петрова А.С.</td>
+                            <td>Разовое посещение</td>
+                            <td>500 руб.</td>
+                            <td>Наличные</td>
+                        </tr>
+                        <tr>
+                            <td>2024-03-13</td>
+                            <td>Сидоров П.К.</td>
+                            <td>Абонемент тренажеры</td>
+                            <td>4,000 руб.</td>
+                            <td>Онлайн</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 1rem;"><strong>Общая выручка:</strong> 10,500 руб.</p>
+            `;
+            result.style.display = 'block';
+        }
+
+        function searchContracts() {
+            const clientId = document.getElementById('searchContract').value;
+            if (!clientId) {
+                alert('Введите ID клиента');
+                return;
+            }
+
+            const result = document.getElementById('contractsResult');
+            result.innerHTML = `
+                <h4>Договоры клиента ID: ${clientId}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Номер договора</th>
+                            <th>Дата подписания</th>
+                            <th>Услуга</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ДГ-2024-001</td>
+                            <td>2024-03-01</td>
+                            <td>Полный абонемент</td>
+                            <td>6,000 руб.</td>
+                            <td>Активен</td>
+                        </tr>
+                        <tr>
+                            <td>ДГ-2024-045</td>
+                            <td>2024-02-01</td>
+                            <td>Только тренажеры</td>
+                            <td>4,000 руб.</td>
+                            <td>Истек</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            result.style.display = 'block';
+        }
+
+        function generateReport() {
+            alert('Финансовый отчет сформирован и отправлен на печать');
+        }
+
+        // Функции клиента
+        function showMySubscriptions() {
+            const content = document.getElementById('clientContent');
+            content.innerHTML = `
+                <h3>Мои абонементы</h3>
+                <div class="card">
+                    <h4>Активный абонемент</h4>
+                    <p><strong>Тип:</strong> Полный (тренажеры + групповые занятия)</p>
+                    <p><strong>Срок действия:</strong> 2024-01-01 - 2024-06-01</p>
+                    <p><strong>Осталось посещений:</strong> 8 из 12</p>
+                    <p><strong>Статус:</strong> Активен</p>
+                </div>
+                <div class="card">
+                    <h4>Предыдущие абонементы</h4>
+                    <p>Разовый визит - 2023-12-15 (использован)</p>
+                    <p>Месячный (только тренажеры) - 2023-11-01 - 2023-11-30 (истек)</p>
+                </div>
+            `;
+            content.style.display = 'block';
+        }
+
+        function showClassRegistration() {
+            const content = document.getElementById('clientContent');
+            content.innerHTML = `
+                <h3>Запись на групповые занятия</h3>
+                <div class="card">
+                    <h4>Доступные занятия</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Занятие</th>
+                                <th>Время</th>
+                                <th>Тренер</th>
+                                <th>Свободные места</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Йога для начинающих</td>
+                                <td>20.03.2024 18:00-19:30</td>
+                                <td>Анна Петрова</td>
+                                <td>5/15</td>
+                                <td><button class="btn" onclick="signUpForClass(1)">Записаться</button></td>
+                            </tr>
+                            <tr>
+                                <td>Силовая тренировка</td>
+                                <td>21.03.2024 19:00-20:00</td>
+                                <td>Иван Сидоров</td>
+                                <td>3/10</td>
+                                <td><button class="btn" onclick="signUpForClass(2)">Записаться</button></td>
+                            </tr>
+                            <tr>
+                                <td>Пилатес</td>
+                                <td>22.03.2024 17:30-18:45</td>
+                                <td>Мария Козлова</td>
+                                <td>8/12</td>
+                                <td><button class="btn" onclick="signUpForClass(3)">Записаться</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h4>Мои записи</h4>
+                    <p>Йога для продвинутых - 18.03.2024 19:00-20:30 (подтверждена)</p>
+                    <p>Функциональный тренинг - 19.03.2024 18:30-19:30 (подтверждена)</p>
+                </div>
+            `;
+            content.style.display = 'block';
+        }
+
+        function showMyVisits() {
+            const content = document.getElementById('clientContent');
+            content.innerHTML = `
+                <h3>История посещений</h3>
+                <div class="card">
+                    <h4>Статистика за месяц</h4>
+                    <p><strong>Всего посещений:</strong> 12</p>
+                    <p><strong>Тренажеры:</strong> 8 посещений</p>
+                    <p><strong>Групповые занятия:</strong> 4 посещения</p>
+                    <p><strong>Средняя продолжительность:</strong> 1 час 15 минут</p>
+                </div>
+                <div class="card">
+                    <h4>Последние посещения</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Время входа</th>
+                                <th>Время выхода</th>
+                                <th>Тип посещения</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>18.03.2024</td>
+                                <td>18:45</td>
+                                <td>20:30</td>
+                                <td>Групповое (Йога)</td>
+                            </tr>
+                            <tr>
+                                <td>16.03.2024</td>
+                                <td>17:30</td>
+                                <td>19:15</td>
+                                <td>Тренажеры</td>
+                            </tr>
+                            <tr>
+                                <td>14.03.2024</td>
+                                <td>19:00</td>
+                                <td>20:00</td>
+                                <td>Групповое (Силовая)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            content.style.display = 'block';
+        }
+
+        function signUpForClass(classId) {
+            alert(`Вы успешно записаны на занятие! ID занятия: ${classId}`);
+        }
+    </script>
+</body>
+</html>
